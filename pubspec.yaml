@@ -35,6 +35,7 @@ dependencies:
   lottie: ^3.1.2
   # flutter_cache_manager: ^3.4.0
   flutter_svg: ^2.0.10+1
+  flutter_screenutil: ^5.9.3
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -48,6 +49,7 @@ dev_dependencies:
   lottie: ^3.1.2
   # flutter_cache_manager: ^3.4.0
   flutter_svg: ^2.0.10+1
+  flutter_screenutil: ^5.9.3
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -76,6 +78,7 @@ flutter:
     - assets/loading_animation.json
     - assets/sent_animation.json
     - assets/head_guide.svg
+    - assets/start_bg.svg
     # - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

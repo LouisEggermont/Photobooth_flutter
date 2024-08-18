@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomTextFormField extends StatelessWidget {
   final String labelText;
@@ -21,14 +22,22 @@ class CustomTextFormField extends StatelessWidget {
         labelStyle: TextStyle(
           color: Colors.black,
           fontFamily: "OpenSans",
+          fontSize: 28.sp, // Scaled font size for label, smaller than input
         ),
         filled: true,
         fillColor: Colors.white,
         border: UnderlineInputBorder(
-          borderRadius: BorderRadius.circular(30.0),
+          borderRadius: BorderRadius.circular(60.r), // Scaled border radius
           borderSide: BorderSide.none,
         ),
-        contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
+        contentPadding: EdgeInsets.symmetric(
+          vertical: 20.h, // Increased vertical padding for larger input area
+          horizontal: 35.w, // Standard horizontal padding
+        ),
+        isDense: true, // Reduces the space between the label and input
+      ),
+      style: TextStyle(
+        fontSize: 31.sp, // Larger font size for the input text
       ),
       validator: validator,
       onSaved: onSaved,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:lottie/lottie.dart';
+import 'package:photobooth/main.dart';
 
 void main() => runApp(MyApp());
 
@@ -99,31 +101,38 @@ class _WaitingForImagesPageState extends State<WaitingForImagesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Lottie.asset(
-              'assets/loading_animation.json',
-              width: 200,
-              height: 200,
-              fit: BoxFit.fill,
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Did you know?',
-              style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: "OpenSans"),
-            ),
-            SizedBox(height: 10),
-            Text(
-              randomString,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, fontFamily: "OpenSans"),
-            ),
-          ],
+      body: Padding(
+        padding: EdgeInsets.all(100.w),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Lottie.asset(
+                'assets/loading_animation.json',
+                width: 200,
+                height: 200,
+                fit: BoxFit.fill,
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Did you know?',
+                style: TextStyle(
+                    fontSize: 52.sp,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "VAG-Rounded",
+                    color: howestWhite),
+              ),
+              SizedBox(height: 10),
+              Text(
+                randomString,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 31.sp,
+                    fontFamily: "OpenSans",
+                    color: howestWhite),
+              ),
+            ],
+          ),
         ),
       ),
     );

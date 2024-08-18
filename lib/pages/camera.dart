@@ -6,7 +6,8 @@ import 'package:photobooth/widgets/camera_button.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter_svg/flutter_svg.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:photobooth/widgets/progress_steps.dart';
 import 'package:photobooth/widgets/title.dart';
 
 class CameraPage extends StatefulWidget {
@@ -24,21 +25,6 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   bool isPictureTaken = false;
   int countdown = 5;
 
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   super.didChangeAppLifecycleState(state);
-  //   if (cameraController == null ||
-  //       cameraController?.value.isInitialized == false) {
-  //     return;
-  //   }
-
-  //   if (state == AppLifecycleState.inactive) {
-  //     cameraController?.dispose();
-  //   } else if (state == AppLifecycleState.resumed) {
-  //     _setupCameraController();
-  //   }
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -49,7 +35,6 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   void dispose() {
     cameraController?.dispose();
     super.dispose();
-    print("dispose");
   }
 
   @override
@@ -70,6 +55,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
 
     return Stack(
       children: [
+        // Camera Preview
         Container(
             width: size.width,
             height: size.height,
@@ -81,27 +67,37 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
             )),
         // Add CustomTitle at the top
         Positioned(
-          top: 40, // Adjust the position as needed
-          left: 20,
-          right: 20,
+          top: 120.h,
+          left: 90.w,
           child: CustomTitle(
             mainText: 'Take a Picture',
             subText: 'You get a 5 second countdown',
+            leftOffset: 100,
+            scaleFactor: .9,
           ),
         ),
-        // Positioned.fill(
-        //   child: Center(
-        //     child: SvgPicture.asset(
-        //       'assets/head_guide.svg', // Path to your SVG file
-        //       width: 1000, // Adjust the size as needed
-        //       height: 1000,
-        //       fit: BoxFit.contain,
-        //       color: Colors.white.withOpacity(0.5),
-        //     ),
-        //   ),
-        // ),
+        // Add head guide as an outline
         Positioned(
-          bottom: 20,
+          top: -250.h,
+          left: -200.w,
+          right: -200.w,
+          child: Center(
+            child: SvgPicture.string(
+              color: Colors.white.withOpacity(0.5), // Set the outline color
+              '''
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 567.08 420.93">
+                <path fill="none" stroke="#fff" stroke-linecap="round" stroke-miterlimit="10" stroke-width="5px" d="M564.58,418.43c-.37-3.13-1.5-7.23-3.2-12.6-7.79-24.64-25.65-40.15-47.54-51.87-21.19-11.34-44.48-16.55-67.44-22.61-26.96-7.12-54.21-13.14-80.77-21.68-5.17-1.66-11.96-2.04-13.29-9.11-2.17-11.47-4.98-23.03,3.92-33.44,3.92-4.59,6.05-10.4,7.81-16.19,3.42-11.22,6.64-22.49,10.08-33.7.9-2.94,1.19-6.78,4.92-7.57,10.76-2.28,12.7-11.09,15.4-19.64,3.39-10.71,4.45-21.8,4.66-32.84.16-8.3.97-17.98-8.18-22.8-4.37-2.3-4.76-4.82-4.54-8.96.72-13.26,2.22-26.56.33-39.83-2.47-17.42-4.72-35.01-23.26-44.01-1.28-.62-2.42-2.12-3.02-3.48-7.15-16.17-21.05-23.99-36.68-29.43-21.51-7.48-43.69-7.41-65.73-3.77-22.32,3.69-41.94,12.5-52.84,34.32-.64,1.29-2.14,2.38-3.49,3.04-11.01,5.38-15.8,15.22-18.62,26.25-4.27,16.73-5.52,33.68-3.3,50.92.6,4.64,3.26,10.56-2.68,13.78-7.91,4.29-9.49,11.44-9.72,19.28-.46,15.7,2.14,30.94,7.67,45.65,1.59,4.24,3.57,8.62,8.23,9.85,6.64,1.75,8.37,6.58,10.16,12.3,5.65,18.04,9.15,36.72,20.71,52.75,8.56,11.86-.97,34.52-15,38.19-28.51,7.46-57.17,14.34-85.67,21.86-28.52,7.53-57.21,14.84-80.86,34.01-16.39,13.29-27.02,29.92-30.12,51.15,0,.07-.01.12-.02.19"/>
+              </svg>
+              ''', // SVG content as a string
+              height:
+                  MediaQuery.of(context).size.height * 1.5, // Scale the height
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+        // Camera Button
+        Positioned(
+          bottom: 150.h,
           left: 0,
           right: 0,
           child: Center(
@@ -111,17 +107,28 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
             ),
           ),
         ),
+        // Countdown Display
         if (isCountdown)
           Center(
             child: Text(
               countdown.toString(),
               style: TextStyle(
-                  fontSize: 100,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'VAG-Rounded'),
+                fontSize: 300.sp,
+                color: Colors.white.withOpacity(0.75),
+                fontWeight: FontWeight.bold,
+                fontFamily: 'VAG-Rounded',
+              ),
             ),
           ),
+        Positioned(
+          bottom: 35.h, // Adjust the bottom position as needed
+          left: 0,
+          right: 0,
+          child: ProgressSteps(
+            totalSteps: 4,
+            currentStep: 1, // Adjust the current step as necessary
+          ),
+        ),
       ],
     );
   }
@@ -142,35 +149,42 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
             ),
           ),
         Positioned(
-          top: 40, // Adjust the position as needed
-          left: 20,
-          right: 20,
+          top: 120.h, // Adjust the position as needed
+          left: 120.w,
           child: CustomTitle(
             mainText: 'You like it?',
             subText: 'You can retake or move on',
+            leftOffset: 60,
+            // scaleFactor: .9,
           ),
         ),
         Positioned(
-            bottom: 20,
-            left: 20,
-            child: CustomCameraButton(
-              onPressed: retakePicture,
-              icon: Icons.refresh,
-            )
-            // ElevatedButton(
-            //   onPressed: retakePicture,
-            //   child: const Text('Retake'),
-            // ),
-            ),
-        Positioned(
-          bottom: 20,
-          right: 20,
+          bottom: 150.h,
+          left: 350.w,
           child: CustomCameraButton(
-              onPressed: () {
-                sendPictureToApi(picture!.path);
-                Navigator.pushReplacementNamed(context, '/prompt');
-              },
-              icon: Icons.done),
+            onPressed: retakePicture,
+            icon: Icons.refresh,
+          ),
+        ),
+        Positioned(
+          bottom: 150.h,
+          right: 350.w,
+          child: CustomCameraButton(
+            onPressed: () {
+              sendPictureToApi(picture!.path);
+              Navigator.pushReplacementNamed(context, '/prompt');
+            },
+            icon: Icons.done,
+          ),
+        ),
+        Positioned(
+          bottom: 35.h, // Adjust the bottom position as needed
+          left: 0,
+          right: 0,
+          child: ProgressSteps(
+            totalSteps: 4,
+            currentStep: 2, // Adjust the current step as necessary
+          ),
         ),
       ],
     );
@@ -230,29 +244,13 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     });
   }
 
-  // Future<void> sendPictureToApi(String path) async {
-  //   var request = http.MultipartRequest('POST', Uri.parse('YOUR_API_ENDPOINT'));
-  //   request.files.add(await http.MultipartFile.fromPath('picture', path));
-  //   var response = await request.send();
-
-  //   if (response.statusCode == 200) {
-  //     print('Picture sent successfully');
-  //     // Navigate to the next screen
-  //   } else {
-  //     print('Failed to send picture');
-  //   }
-  // }
-
   Future<void> sendPictureToApi(String path) async {
-    // Read the image file
     File imageFile = File(path);
     List<int> imageBytes = await imageFile.readAsBytes();
     String base64Image = base64Encode(imageBytes);
 
-    // Create the JSON payload
     var payload = jsonEncode({'image': 'data:image/png;base64,$base64Image'});
 
-    // Send the request
     var response = await http.post(
       Uri.parse('http://192.168.0.177:2000/save_image'),
       headers: {'Content-Type': 'application/json'},
@@ -261,7 +259,6 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
 
     if (response.statusCode == 200) {
       print('Picture sent successfully');
-      // Navigate to the next screen
     } else {
       print('Failed to send picture');
     }

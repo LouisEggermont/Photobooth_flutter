@@ -3,6 +3,7 @@ import 'package:photobooth/widgets/progress_steps.dart';
 import '/widgets/title.dart';
 import '/widgets/button.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ChoosePromptPage extends StatefulWidget {
   @override
@@ -16,16 +17,21 @@ class _ChoosePromptPageState extends State<ChoosePromptPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.only(
+          top: 90.h, // Top padding
+          bottom: 50.h, // Bottom padding
+          left: 90.w, // Left padding
+          right: 90.w, // Right padding
+        ),
         child: Column(
           children: [
-            SizedBox(height: 40),
+            SizedBox(height: 10.h), // Using ScreenUtil for responsive spacing
             _buildTitle(),
-            SizedBox(height: 20),
+            SizedBox(height: 120.h), // Using ScreenUtil for responsive spacing
             _buildPromptOptions(),
-            SizedBox(height: 20),
+            SizedBox(height: 10.h), // Using ScreenUtil for responsive spacing
             _buildNextButton(),
-            SizedBox(height: 20),
+            SizedBox(height: 40.h), // Using ScreenUtil for responsive spacing
             ProgressSteps(totalSteps: 4, currentStep: 2),
           ],
         ),
@@ -62,13 +68,14 @@ class _ChoosePromptPageState extends State<ChoosePromptPage> {
         });
       },
       child: Container(
-        margin: EdgeInsets.all(8.0),
+        margin: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
+          color: Colors.red.withOpacity(0.2), // Use color inside BoxDecoration
           border: Border.all(
             color: _selectedPrompt == value ? Colors.white : Colors.transparent,
-            width: 3,
+            width: 10.w, // Scaled border width
           ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(50.w), // Scaled border radius
           image: DecorationImage(
             image: AssetImage(assetPath),
             fit: BoxFit.cover,
@@ -81,20 +88,20 @@ class _ChoosePromptPageState extends State<ChoosePromptPage> {
         child: Align(
           alignment: Alignment.bottomCenter, // Aligns text at the bottom center
           child: Padding(
-            padding: const EdgeInsets.only(
-                bottom: 8.0), // Add some padding at the bottom
+            padding:
+                EdgeInsets.only(bottom: 8.h), // Add some padding at the bottom
             child: Text(
               label,
               style: TextStyle(
                 fontFamily: 'VAG-Rounded',
-                fontSize: 24,
+                fontSize: 55.sp, // Scaled font size
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
                 shadows: [
                   Shadow(
-                    blurRadius: 10,
+                    blurRadius: 10.r, // Scaled blur radius
                     color: Colors.black,
-                    offset: Offset(2, 2),
+                    offset: Offset(2.w, 2.h), // Scaled shadow offset
                   ),
                 ],
               ),
@@ -106,61 +113,25 @@ class _ChoosePromptPageState extends State<ChoosePromptPage> {
   }
 
   Widget _buildNextButton() {
-    return CustomButton(
-      text: 'Next',
-      onPressed: () async {
-        if (_selectedPrompt != null) {
-          await _sendPromptToApi(_selectedPrompt!, context);
-          // Navigator.pushReplacementNamed(context, '/form');
-        }
-        // Navigator.pushReplacementNamed(context, '/form');
-      },
-      isDisabled: _selectedPrompt == null,
-    );
-  }
-
-  Widget _buildProgressBar() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        _buildProgressStep(1),
-        _buildProgressLine(),
-        _buildProgressStep(2),
-        _buildProgressLine(),
-        _buildProgressStep(3),
-        _buildProgressLine(),
-        _buildProgressStep(4),
-      ],
-    );
-  }
-
-  Widget _buildProgressStep(int step) {
-    return CircleAvatar(
-      radius: 20,
-      backgroundColor:
-          _selectedPrompt == step ? Colors.white : Color(0xFF44C8F5),
-      child: Text(
-        '$step',
-        style: TextStyle(
-          color: _selectedPrompt == step ? Color(0xFF44C8F5) : Colors.white,
-          fontSize: 18,
+        CustomButton(
+          text: 'Next',
+          onPressed: () async {
+            if (_selectedPrompt != null) {
+              await _sendPromptToApi(_selectedPrompt!, context);
+            }
+          },
+          isDisabled: _selectedPrompt == null,
         ),
-      ),
-    );
-  }
-
-  Widget _buildProgressLine() {
-    return Container(
-      width: 40,
-      height: 4,
-      color: Colors.white.withOpacity(0.6),
+      ],
     );
   }
 }
 
 Future<void> _sendPromptToApi(int promptNumber, BuildContext context) async {
   try {
-    // Replace 'YOUR_LOCAL_IP' with your machine's local IP address
     var response = await http.get(
       Uri.parse('http://192.168.0.177:2000/get_prompt/$promptNumber'),
     );
@@ -168,7 +139,6 @@ Future<void> _sendPromptToApi(int promptNumber, BuildContext context) async {
     if (response.statusCode == 200) {
       print('Prompt sent successfully');
       Navigator.pushReplacementNamed(context, '/form');
-      // Handle successful response if needed
     } else {
       print('Failed to send prompt');
     }

@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:photobooth/widgets/button.dart';
 import 'package:photobooth/widgets/form_field.dart';
 import 'package:photobooth/widgets/progress_steps.dart';
-import 'dart:convert';
-import 'package:photobooth/widgets/title.dart';
+import '/widgets/title.dart';
+import '/widgets/button.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:http/http.dart' as http;
 
 class FormPage extends StatefulWidget {
   @override
@@ -23,18 +25,25 @@ class _FormPageState extends State<FormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Color(0xFF63C9F2),
+      backgroundColor: Color(0xFF63C9F2),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        // padding: EdgeInsets.symmetric(horizontal: 90.w),
+        padding: EdgeInsets.only(
+          top: 90.h, // Top padding
+          bottom: 50.h, // Bottom padding
+          left: 90.w, // Left padding
+          right: 90.w, // Right padding
+        ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 40),
+            SizedBox(height: 40.h),
             _buildTitle(),
-            SizedBox(height: 20),
+            SizedBox(height: 180.h),
             _buildForm(),
             Spacer(),
-            ProgressSteps(totalSteps: 4, currentStep: 3),
-            SizedBox(height: 20),
+            _buildProgressSteps(),
+            SizedBox(height: 20.h),
           ],
         ),
       ),
@@ -42,9 +51,15 @@ class _FormPageState extends State<FormPage> {
   }
 
   Widget _buildTitle() {
-    return CustomTitle(
-      mainText: 'Generating images',
-      subText: 'Where shall we send them?',
+    return Row(
+      children: [
+        CustomTitle(
+          mainText: 'Generating images',
+          subText: 'Where shall we send your pictures?',
+          leftOffset: 40,
+          scaleFactor: .87,
+        ),
+      ],
     );
   }
 
@@ -55,18 +70,24 @@ class _FormPageState extends State<FormPage> {
         children: [
           Row(
             children: [
-              Expanded(child: _buildFirstNameField()),
-              SizedBox(width: 16),
-              Expanded(child: _buildLastNameField()),
+              Flexible(
+                flex: 2, // Smaller width for the first name field
+                child: _buildFirstNameField(),
+              ),
+              SizedBox(width: 32.w),
+              Flexible(
+                flex: 3, // Larger width for the last name field
+                child: _buildLastNameField(),
+              ),
             ],
           ),
-          SizedBox(height: 16),
+          SizedBox(height: 44.h),
           _buildEmailField(),
-          SizedBox(height: 16),
+          SizedBox(height: 85.h),
           _buildPrivacyPolicyCheckbox(),
-          SizedBox(height: 16),
+          SizedBox(height: 85.h),
           _buildSecondaryYearRadioButtons(),
-          SizedBox(height: 16),
+          SizedBox(height: 100.h),
           _buildSubmitButton(),
         ],
       ),
@@ -129,13 +150,15 @@ class _FormPageState extends State<FormPage> {
           children: [
             TextSpan(
               text: 'I accept the ',
-              style: TextStyle(color: Colors.black, fontFamily: "OpenSans"),
+              style: TextStyle(
+                  color: Colors.black, fontFamily: "OpenSans", fontSize: 31.sp),
             ),
             TextSpan(
               text: 'privacy policy',
               style: TextStyle(
                 color: Colors.black,
                 fontFamily: "OpenSans",
+                fontSize: 31.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -162,16 +185,21 @@ class _FormPageState extends State<FormPage> {
         Text(
           'Current secondary year',
           style: TextStyle(
-              fontSize: 16.0, color: Colors.black, fontFamily: "OpenSans"),
+            fontSize: 31.sp,
+            color: Colors.black,
+            fontFamily: "OpenSans",
+          ),
         ),
-        SizedBox(height: 8),
+        SizedBox(height: 8.h),
         Row(
           children: [
             Expanded(
               child: RadioListTile(
                 title: Text('5th',
-                    style:
-                        TextStyle(color: Colors.black, fontFamily: "OpenSans")),
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontFamily: "OpenSans",
+                        fontSize: 31.sp)),
                 value: '5',
                 groupValue: _year,
                 onChanged: (value) {
@@ -184,8 +212,10 @@ class _FormPageState extends State<FormPage> {
             Expanded(
               child: RadioListTile(
                 title: Text('6th',
-                    style:
-                        TextStyle(color: Colors.black, fontFamily: "OpenSans")),
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontFamily: "OpenSans",
+                        fontSize: 31.sp)),
                 value: '6',
                 groupValue: _year,
                 onChanged: (value) {
@@ -198,8 +228,10 @@ class _FormPageState extends State<FormPage> {
             Expanded(
               child: RadioListTile(
                 title: Text('Other',
-                    style:
-                        TextStyle(color: Colors.black, fontFamily: "OpenSans")),
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontFamily: "OpenSans",
+                        fontSize: 31.sp)),
                 value: 'other',
                 groupValue: _year,
                 onChanged: (value) {
@@ -216,21 +248,26 @@ class _FormPageState extends State<FormPage> {
   }
 
   Widget _buildSubmitButton() {
-    return CustomButton(
-      onPressed: () {
-        setState(() {
-          _isSubmitted = true;
-        });
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        CustomButton(
+          onPressed: () {
+            setState(() {
+              _isSubmitted = true;
+            });
 
-        if (_formKey.currentState!.validate() && _acceptPrivacyPolicy) {
-          _formKey.currentState!.save();
-          _sendFormToApi();
-        } else if (!_acceptPrivacyPolicy) {
-          _showPrivacyPolicyDialog();
-        }
-      },
-      text: "Submit",
-      isDisabled: !_isFormValid(),
+            if (_formKey.currentState!.validate() && _acceptPrivacyPolicy) {
+              _formKey.currentState!.save();
+              _sendFormToApi();
+            } else if (!_acceptPrivacyPolicy) {
+              _showPrivacyPolicyDialog();
+            }
+          },
+          text: "Submit",
+          isDisabled: !_isFormValid(),
+        ),
+      ],
     );
   }
 
@@ -296,6 +333,10 @@ class _FormPageState extends State<FormPage> {
     } catch (e) {
       Future.delayed(Duration(seconds: 5), _checkStatus);
     }
+  }
+
+  Widget _buildProgressSteps() {
+    return ProgressSteps(totalSteps: 4, currentStep: 3);
   }
 }
 

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:photobooth/widgets/button.dart';
+import 'package:photobooth/widgets/page_template.dart';
 import 'dart:convert';
-
 import '/widgets/title.dart';
 import '/widgets/progress_steps.dart';
-
 import 'sent.dart';
+
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() => runApp(MaterialApp(home: ChoosePicturePage()));
 
@@ -40,9 +42,6 @@ class _ChoosePicturePageState extends State<ChoosePicturePage> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-        print(
-            "Received data from backend: $data"); // Add this line to print the entire response
-
         setState(() {
           _images = List<ImageData>.from(
             data['generated_images'].map(
@@ -52,18 +51,14 @@ class _ChoosePicturePageState extends State<ChoosePicturePage> {
               ),
             ),
           );
-          print(
-              "Images processed: $_images"); // Add this line to check if the images are correctly processed
           _isLoading = false;
         });
       } else {
-        print("Failed to load images, status code: ${response.statusCode}");
         setState(() {
           _isLoading = false;
         });
       }
     } catch (e) {
-      print("Error fetching images: $e");
       setState(() {
         _isLoading = false;
       });
@@ -72,41 +67,37 @@ class _ChoosePicturePageState extends State<ChoosePicturePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xFF6CD4FF),
-      body: _isLoading
+    return ResponsivePageTemplate(
+      title: CustomTitle(
+        mainText: 'Choose Your Pictures',
+        subText: '',
+        scaleFactor: 0.9,
+      ),
+      content: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  SizedBox(height: 40),
-                  CustomTitle(
-                    mainText: 'Choose Your Pictures',
-                    subText: '',
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  _buildImageGrid(),
-                  SizedBox(height: 20),
-                  _buildSendButton(),
-                  SizedBox(height: 20),
-                  ProgressSteps(totalSteps: 4, currentStep: 4),
-                ],
-              ),
-            ),
+          : _buildImageGrid(),
+      footer: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildSendButton(),
+          SizedBox(height: 20.h),
+          ProgressSteps(totalSteps: 4, currentStep: 4),
+        ],
+      ),
     );
   }
 
   Widget _buildImageGrid() {
-    return Expanded(
-      child: GridView.count(
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        children: List.generate(_images.length, (index) {
-          return _buildImageOption(index);
-        }),
+        crossAxisSpacing: 10.w,
+        mainAxisSpacing: 10.h,
       ),
+      itemCount: _images.length,
+      itemBuilder: (context, index) {
+        return _buildImageOption(index);
+      },
     );
   }
 
@@ -129,7 +120,6 @@ class _ChoosePicturePageState extends State<ChoosePicturePage> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(14),
               child: Image.memory(
-                gaplessPlayback: true,
                 base64Decode(_images[index].base64),
                 fit: BoxFit.cover,
               ),
@@ -157,55 +147,27 @@ class _ChoosePicturePageState extends State<ChoosePicturePage> {
   }
 
   Widget _buildSendButton() {
-    return ElevatedButton(
-      onPressed: _selectedImages.isNotEmpty
-          ? () {
-              // _sendSelectedImages();
-              // Get the URLs of the selected images
-              List<String> selectedImageUrls =
-                  _selectedImages.map((index) => _images[index].url).toList();
+    return Align(
+      alignment: Alignment.centerRight,
+      child: CustomButton(
+        text: 'Send',
+        onPressed: _selectedImages.isNotEmpty
+            ? () {
+                List<String> selectedImageUrls =
+                    _selectedImages.map((index) => _images[index].url).toList();
 
-              // Navigate to SentPage and pass the selectedImageUrls
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      SentPage(selectedImageUrls: selectedImageUrls),
-                ),
-              );
-            }
-          : null,
-      child: Text('Send'),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFE91E63),
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        SentPage(selectedImageUrls: selectedImageUrls),
+                  ),
+                );
+              }
+            : () {}, // Provide an empty callback for the disabled state
+        isDisabled: _selectedImages
+            .isEmpty, // Disable the button if no images are selected
       ),
     );
-  }
-
-  Future<void> _sendSelectedImages() async {
-    final selectedImageUrls =
-        _selectedImages.map((index) => _images[index].url).toList();
-
-    try {
-      final response = await http.post(
-        Uri.parse('http://192.168.0.177:2000/send_email'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'selected_image_urls': selectedImageUrls}),
-      );
-
-      if (response.statusCode == 200) {
-        // Handle success
-        print('Images sent successfully');
-      } else {
-        // Handle failure
-        print('Failed to send images');
-      }
-    } catch (e) {
-      print('Error: $e');
-    }
   }
 }
