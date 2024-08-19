@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:lottie/lottie.dart';
 import 'package:photobooth/main.dart';
 import 'package:photobooth/provider/backend_config.dart';
 import 'package:photobooth/widgets/button.dart';
@@ -104,7 +105,12 @@ class _ChoosePicturePageState extends State<ChoosePicturePage> {
 
   Widget _buildLoadingIndicator() {
     return Center(
-      child: CircularProgressIndicator(),
+      child: Lottie.asset(
+        'assets/loading_animation.json',
+        width: 300.w,
+        // height: 200.h,
+        fit: BoxFit.fill,
+      ),
     );
   }
 
