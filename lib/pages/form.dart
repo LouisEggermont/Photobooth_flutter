@@ -1,13 +1,15 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:photobooth/provider/backend_config.dart';
 import 'package:photobooth/widgets/error_dialog.dart';
 import 'package:photobooth/widgets/form_field.dart';
 import 'package:photobooth/widgets/progress_steps.dart';
+import 'package:provider/provider.dart';
 import '/widgets/title.dart';
 import '/widgets/button.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
+import '/widgets/page_template.dart';
 
 class FormPage extends StatefulWidget {
   @override
@@ -25,34 +27,44 @@ class _FormPageState extends State<FormPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Color(0xFF63C9F2),
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: SafeArea(
+    final bool isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
+
+    return GestureDetector(
+      onTap: () {
+        // Unfocus the text fields and hide the keyboard
+        FocusScope.of(context).unfocus();
+      },
+      child: ResponsivePageTemplate(
+        title: _buildTitle(),
+        content: Padding(
+          padding: EdgeInsets.only(top: 80.h),
           child: SingleChildScrollView(
-            padding: EdgeInsets.only(
-              top: 90.h, // Top padding
-              bottom: 50.h, // Bottom padding
-              left: 90.w, // Left padding
-              right: 90.w, // Right padding
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height -
+                    700.h, // Adjust height to center the form
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildFormContent(),
+                  ],
+                ),
+              ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 40.h),
-                _buildTitle(),
-                SizedBox(height: 180.h),
-                _buildForm(),
-                SizedBox(height: 100.h),
-                _buildSubmitButton(),
-                SizedBox(height: 20.h),
-                _buildProgressSteps(),
-              ],
-            ),
+          ),
+        ),
+        footer: Visibility(
+          visible:
+              !isKeyboardVisible, // Hide the footer if the keyboard is visible
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildSubmitButton(),
+              SizedBox(height: 20.h),
+              _buildProgressSteps(),
+            ],
           ),
         ),
       ),
@@ -72,32 +84,43 @@ class _FormPageState extends State<FormPage> {
     );
   }
 
-  Widget _buildForm() {
+  Widget _buildFormContent() {
     return Form(
       key: _formKey,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            children: [
-              Flexible(
-                flex: 2, // Smaller width for the first name field
-                child: _buildFirstNameField(),
-              ),
-              SizedBox(width: 32.w),
-              Flexible(
-                flex: 3, // Larger width for the last name field
-                child: _buildLastNameField(),
-              ),
-            ],
-          ),
-          SizedBox(height: 44.h),
-          _buildEmailField(),
-          SizedBox(height: 85.h),
-          _buildPrivacyPolicyCheckbox(),
-          SizedBox(height: 85.h),
-          _buildSecondaryYearRadioButtons(),
+          SizedBox(height: 40.h),
+          _buildForm(),
+          SizedBox(height: 20.h),
         ],
       ),
+    );
+  }
+
+  Widget _buildForm() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Flexible(
+              flex: 2, // Smaller width for the first name field
+              child: _buildFirstNameField(),
+            ),
+            SizedBox(width: 32.w),
+            Flexible(
+              flex: 3, // Larger width for the last name field
+              child: _buildLastNameField(),
+            ),
+          ],
+        ),
+        SizedBox(height: 44.h),
+        _buildEmailField(),
+        SizedBox(height: 85.h),
+        _buildPrivacyPolicyCheckbox(),
+        SizedBox(height: 85.h),
+        _buildSecondaryYearRadioButtons(),
+      ],
     );
   }
 
@@ -300,8 +323,10 @@ class _FormPageState extends State<FormPage> {
 
   Future<void> _sendFormToApi() async {
     try {
+      String backendUrl =
+          Provider.of<BackendConfig>(context, listen: false).backendUrl;
       var response = await http.post(
-        Uri.parse('http://192.168.0.177:2000/form'),
+        Uri.parse('$backendUrl/form'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'fname': _firstName,
@@ -333,8 +358,9 @@ class _FormPageState extends State<FormPage> {
 
   Future<void> _checkStatus() async {
     try {
-      final response =
-          await http.get(Uri.parse('http://192.168.0.177:2000/check_status'));
+      String backendUrl =
+          Provider.of<BackendConfig>(context, listen: false).backendUrl;
+      final response = await http.get(Uri.parse('$backendUrl/check_status'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['isDone'] == true) {

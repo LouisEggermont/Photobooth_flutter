@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:photobooth/main.dart';
+import 'package:photobooth/provider/backend_config.dart';
 import 'package:photobooth/widgets/button.dart';
+import 'package:photobooth/widgets/error_dialog.dart';
 import 'package:photobooth/widgets/page_template.dart';
+import 'package:provider/provider.dart';
 import 'dart:convert';
 import '/widgets/title.dart';
 import '/widgets/progress_steps.dart';
 import 'sent.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-void main() => runApp(MaterialApp(home: ChoosePicturePage()));
 
 class ImageData {
   final String url;
@@ -37,8 +38,9 @@ class _ChoosePicturePageState extends State<ChoosePicturePage> {
 
   Future<void> _fetchImages() async {
     try {
-      final response =
-          await http.get(Uri.parse('http://192.168.0.177:2000/choosepicture'));
+      String backendUrl =
+          Provider.of<BackendConfig>(context, listen: false).backendUrl;
+      final response = await http.get(Uri.parse('$backendUrl/choosepicture'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -58,25 +60,29 @@ class _ChoosePicturePageState extends State<ChoosePicturePage> {
         setState(() {
           _isLoading = false;
         });
+        _showErrorDialog('Failed to load images. Please try again.');
       }
     } catch (e) {
       setState(() {
         _isLoading = false;
       });
+      _showErrorDialog('Error: Could not fetch images.');
     }
+  }
+
+  void _showErrorDialog(String message) {
+    ErrorDialog.show(
+      context,
+      message,
+      onRetry: _fetchImages, // Retry logic
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return ResponsivePageTemplate(
-      title: CustomTitle(
-        mainText: 'Choose Your Pictures',
-        subText: '',
-        scaleFactor: 0.9,
-      ),
-      content: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : _buildImageGrid(),
+      title: _buildTitle(),
+      content: _isLoading ? _buildLoadingIndicator() : _buildImageGrid(),
       footer: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -88,22 +94,48 @@ class _ChoosePicturePageState extends State<ChoosePicturePage> {
     );
   }
 
+  Widget _buildTitle() {
+    return CustomTitle(
+      mainText: 'Choose Your Pictures',
+      subText: '',
+      scaleFactor: .87,
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
   Widget _buildImageGrid() {
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10.w,
-        mainAxisSpacing: 10.h,
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10.w,
+              mainAxisSpacing: 10.h,
+            ),
+            itemCount: _images.length,
+            itemBuilder: (context, index) {
+              return _buildImageOption(index);
+            },
+            shrinkWrap:
+                true, // Ensure the grid takes up only as much space as needed
+            physics:
+                NeverScrollableScrollPhysics(), // Disable scrolling inside the grid
+          ),
+        ],
       ),
-      itemCount: _images.length,
-      itemBuilder: (context, index) {
-        return _buildImageOption(index);
-      },
     );
   }
 
   Widget _buildImageOption(int index) {
     final bool isSelected = _selectedImages.contains(index);
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -117,43 +149,52 @@ class _ChoosePicturePageState extends State<ChoosePicturePage> {
       child: Stack(
         children: [
           Container(
-            margin: EdgeInsets.all(8.0),
+            margin: EdgeInsets.all(12.w),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(50.w),
               child: Image.memory(
                 base64Decode(_images[index].base64),
+                gaplessPlayback: true,
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          if (isSelected)
-            Positioned(
-              top: 16,
-              right: 16,
-              child: Container(
-                padding: EdgeInsets.all(4.0),
-                decoration: BoxDecoration(
-                  color: howestBlue,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.check,
-                  color: Colors.white,
+          Positioned(
+            top: 32.w,
+            right: 32.w,
+            child: Container(
+              padding: EdgeInsets.all(6.w),
+              decoration: BoxDecoration(
+                color: !isSelected ? howestBlack.withOpacity(.5) : howestBlue,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color:
+                      !isSelected ? Colors.grey.withOpacity(.5) : Colors.white,
+                  width: 7.w,
                 ),
               ),
+              child: Icon(
+                size: 60.w,
+                Icons.check,
+                color: !isSelected ? Colors.transparent : Colors.white,
+              ),
             ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildSendButton() {
+    final bool isButtonDisabled = _selectedImages.isEmpty;
+
     return Align(
       alignment: Alignment.centerRight,
       child: CustomButton(
         text: 'Send',
-        onPressed: _selectedImages.isNotEmpty
-            ? () {
+        onPressed: isButtonDisabled
+            ? () {} // Provide an empty callback to satisfy the type requirement
+            : () {
                 List<String> selectedImageUrls =
                     _selectedImages.map((index) => _images[index].url).toList();
 
@@ -164,10 +205,8 @@ class _ChoosePicturePageState extends State<ChoosePicturePage> {
                         SentPage(selectedImageUrls: selectedImageUrls),
                   ),
                 );
-              }
-            : () {}, // Provide an empty callback for the disabled state
-        isDisabled: _selectedImages
-            .isEmpty, // Disable the button if no images are selected
+              },
+        isDisabled: isButtonDisabled, // Disable the button visually
       ),
     );
   }

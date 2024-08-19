@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 // Pages
 import 'pages/start.dart';
@@ -14,8 +15,10 @@ import 'pages/waiting.dart';
 import 'widgets/title.dart';
 import 'widgets/button.dart';
 
-// Colors
+// Providers
+import 'package:photobooth/provider/backend_config.dart';
 
+// Colors
 const Color howestBlue = Color(0xFF44C8F5);
 const Color howestYellow = Color(0xFFFFFF00);
 const Color howestPink = Color(0xFFE6007E);
@@ -23,8 +26,17 @@ const Color howestGreen = Color(0xFF009A93);
 const Color howestBlack = Color(0xFF000000);
 const Color howestWhite = Color(0xFFFFFFFF);
 
+// void main() {
+//   runApp(MyApp());
+// }
+
 void main() {
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => BackendConfig(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -68,7 +80,7 @@ class MyApp extends StatelessWidget {
             //   ),
             // ),
           ),
-          home: StartPage(),
+          home: FormPage(),
           routes: {
             '/start': (context) => StartPage(),
             '/camera': (context) => CameraPage(),

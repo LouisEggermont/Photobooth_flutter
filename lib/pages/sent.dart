@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:lottie/lottie.dart';
+import 'package:photobooth/provider/backend_config.dart';
 import 'package:photobooth/widgets/error_dialog.dart';
-import 'dart:convert';
-
+import 'package:photobooth/widgets/page_template.dart';
+import 'package:provider/provider.dart';
 import '../widgets/title.dart';
+import 'dart:convert';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SentPage extends StatefulWidget {
   final List<String> selectedImageUrls;
@@ -26,8 +29,10 @@ class _SentPageState extends State<SentPage> {
 
   Future<void> _sendRequest() async {
     try {
+      String backendUrl =
+          Provider.of<BackendConfig>(context, listen: false).backendUrl;
       final response = await http.post(
-        Uri.parse('http://192.168.0.177:2000/send_email'),
+        Uri.parse('$backendUrl/send_email'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'selected_image_urls': widget.selectedImageUrls}),
       );
@@ -37,7 +42,7 @@ class _SentPageState extends State<SentPage> {
           isSuccessful = true;
         });
         await Future.delayed(
-            Duration(seconds: 2)); // Short delay to show success animation
+            Duration(seconds: 5)); // Short delay to show success animation
 
         // Optionally navigate to another page or pop back to the previous one
         Navigator.pushReplacementNamed(context, '/start');
@@ -59,27 +64,36 @@ class _SentPageState extends State<SentPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: isSuccessful
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomTitle(
-                    mainText: 'Images are sent!',
-                    subText: 'Thank you and enjoy!',
-                  ),
-                  Lottie.asset('assets/sent_animation.json',
-                      width: 200, height: 200, fit: BoxFit.fill, repeat: false),
-                ],
-              )
-            : Lottie.asset(
-                'assets/loading_animation.json',
-                width: 200,
-                height: 200,
-                fit: BoxFit.fill,
-              ), // Show loading spinner while waiting
-      ),
+    return ResponsivePageTemplate(
+      title: _buildTitle(),
+      content: _buildContent(),
+      footer: SizedBox(), // No footer needed for this page, leaving it empty
+    );
+  }
+
+  Widget _buildTitle() {
+    return CustomTitle(
+      mainText: isSuccessful ? 'Images are sent!' : '',
+      subText: isSuccessful ? 'Thank you and enjoy!' : '',
+    );
+  }
+
+  Widget _buildContent() {
+    return Center(
+      child: isSuccessful
+          ? Lottie.asset(
+              'assets/sent_animation.json',
+              width: 800.w,
+              // height: 200.h,
+              fit: BoxFit.fill,
+              repeat: false,
+            )
+          : Lottie.asset(
+              'assets/loading_animation.json',
+              width: 200.w,
+              // height: 200.h,
+              fit: BoxFit.fill,
+            ), // Show loading spinner while waiting
     );
   }
 }

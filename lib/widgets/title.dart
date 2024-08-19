@@ -4,44 +4,48 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class CustomTitle extends StatelessWidget {
   final String mainText;
   final String subText;
-  final double leftOffset; // Parameter for left offset
-  final double scaleFactor; // New parameter for scaling the title
+  final double leftOffset;
+  final double scaleFactor;
 
   const CustomTitle({
     required this.mainText,
     required this.subText,
-    this.leftOffset = 190.0, // Default value for the left offset
-    this.scaleFactor = 1.0, // Default scale factor
+    this.leftOffset = 190.0,
+    this.scaleFactor = 1.0,
   });
 
   @override
   Widget build(BuildContext context) {
+    // If mainText is empty, return an empty SizedBox (no rendering)
+    if (mainText.isEmpty) {
+      return SizedBox.shrink();
+    }
+
     return Transform.rotate(
-      angle: -0.05, // Rotate the title slightly
+      angle: -0.05,
       child: Stack(
-        clipBehavior: Clip
-            .none, // Allows the subtitle to overflow and stack above the main title
+        clipBehavior: Clip.none,
         children: [
           // Main Title (Pink Box)
           Container(
             padding: EdgeInsets.symmetric(
-              horizontal: 22.w * scaleFactor, // Scaled padding with factor
-              vertical: 6.h * scaleFactor, // Scaled padding with factor
+              horizontal: 22.w * scaleFactor,
+              vertical: 6.h * scaleFactor,
             ),
             decoration: BoxDecoration(
-              color: Color(0xFFe6007e), // Background color for the main text
+              color: Color(0xFFe6007e),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black26,
-                  offset: Offset(4.w, 4.h), // Scaled shadow offset
-                  blurRadius: 4.r, // Scaled blur radius
+                  offset: Offset(4.w, 4.h),
+                  blurRadius: 4.r,
                 ),
               ],
             ),
             child: Text(
               mainText,
               style: TextStyle(
-                fontSize: 99.sp * scaleFactor, // Scaled font size with factor
+                fontSize: 99.sp * scaleFactor,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
                 fontFamily: 'VAG-Rounded',
@@ -51,31 +55,29 @@ class CustomTitle extends StatelessWidget {
           // Conditionally render the Subtitle (Yellow Box)
           if (subText.isNotEmpty)
             Positioned(
-              top: 140.w * scaleFactor, // Scaled top position with factor
-              left: leftOffset.w *
-                  scaleFactor, // Scaled left position with factor
+              top: 140.w * scaleFactor,
+              left: leftOffset.w * scaleFactor,
               child: Container(
                 padding: EdgeInsets.symmetric(
-                  horizontal: 12.w * scaleFactor, // Scaled padding with factor
-                  vertical: 6.h * scaleFactor, // Scaled padding with factor
+                  horizontal: 12.w * scaleFactor,
+                  vertical: 6.h * scaleFactor,
                 ),
                 decoration: BoxDecoration(
-                  color: Color(0xFFFFFF00), // Background color for the subtext
+                  color: Color(0xFFFFFF00),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black26,
-                      offset: Offset(4.w, 4.h), // Scaled shadow offset
-                      blurRadius: 4.r, // Scaled blur radius
+                      offset: Offset(4.w, 4.h),
+                      blurRadius: 4.r,
                     ),
                   ],
                 ),
                 child: Text(
                   subText,
                   style: TextStyle(
-                    fontSize:
-                        62.sp * scaleFactor, // Scaled font size with factor
+                    fontSize: 62.sp * scaleFactor,
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 1.sp * scaleFactor, // Scaled letter spacing
+                    letterSpacing: 1.sp * scaleFactor,
                     color: Colors.black,
                     fontFamily: 'VAG-Rounded',
                   ),

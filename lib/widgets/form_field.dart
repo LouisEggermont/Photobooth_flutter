@@ -35,6 +35,10 @@ class CustomTextFormField extends StatelessWidget {
           horizontal: 35.w, // Standard horizontal padding
         ),
         isDense: true, // Reduces the space between the label and input
+        errorStyle: TextStyle(
+          color: Colors.red,
+          fontSize: 20.sp, // Increased font size for the error text
+        ),
       ),
       style: TextStyle(
         fontSize: 31.sp, // Larger font size for the input text

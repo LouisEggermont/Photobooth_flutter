@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:photobooth/provider/backend_config.dart';
 import 'package:photobooth/widgets/error_dialog.dart';
+import 'package:photobooth/widgets/page_template.dart';
 import 'package:photobooth/widgets/progress_steps.dart';
+import 'package:provider/provider.dart';
 import '/widgets/title.dart';
 import '/widgets/button.dart';
 import 'package:http/http.dart' as http;
@@ -16,26 +19,16 @@ class _ChoosePromptPageState extends State<ChoosePromptPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.only(
-          top: 90.h, // Top padding
-          bottom: 50.h, // Bottom padding
-          left: 90.w, // Left padding
-          right: 90.w, // Right padding
-        ),
-        child: Column(
-          children: [
-            SizedBox(height: 10.h), // Using ScreenUtil for responsive spacing
-            _buildTitle(),
-            SizedBox(height: 120.h), // Using ScreenUtil for responsive spacing
-            _buildPromptOptions(),
-            SizedBox(height: 10.h), // Using ScreenUtil for responsive spacing
-            _buildNextButton(),
-            SizedBox(height: 40.h), // Using ScreenUtil for responsive spacing
-            ProgressSteps(totalSteps: 4, currentStep: 2),
-          ],
-        ),
+    return ResponsivePageTemplate(
+      title: _buildTitle(),
+      content: _buildPromptOptions(),
+      footer: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildNextButton(),
+          SizedBox(height: 40.h),
+          ProgressSteps(totalSteps: 4, currentStep: 2),
+        ],
       ),
     );
   }
@@ -49,13 +42,22 @@ class _ChoosePromptPageState extends State<ChoosePromptPage> {
 
   Widget _buildPromptOptions() {
     return Expanded(
-      child: GridView.count(
-        crossAxisCount: 2,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildPromptOption(1, 'Sport', 'assets/sport.png'),
-          _buildPromptOption(2, 'Space', 'assets/space.png'),
-          _buildPromptOption(3, 'Nature', 'assets/nature.png'),
-          _buildPromptOption(4, 'Gangster', 'assets/gangster.png'),
+          GridView.count(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10.w,
+            mainAxisSpacing: 10.h,
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            children: [
+              _buildPromptOption(1, 'Sport', 'assets/sport.png'),
+              _buildPromptOption(2, 'Space', 'assets/space.png'),
+              _buildPromptOption(3, 'Nature', 'assets/nature.png'),
+              _buildPromptOption(4, 'Gangster', 'assets/gangster.png'),
+            ],
+          ),
         ],
       ),
     );
@@ -71,12 +73,12 @@ class _ChoosePromptPageState extends State<ChoosePromptPage> {
       child: Container(
         margin: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
-          color: Colors.red.withOpacity(0.2), // Use color inside BoxDecoration
+          color: Colors.red.withOpacity(0.2),
           border: Border.all(
             color: _selectedPrompt == value ? Colors.white : Colors.transparent,
-            width: 10.w, // Scaled border width
+            width: 10.w,
           ),
-          borderRadius: BorderRadius.circular(50.w), // Scaled border radius
+          borderRadius: BorderRadius.circular(50.w),
           image: DecorationImage(
             image: AssetImage(assetPath),
             fit: BoxFit.cover,
@@ -87,22 +89,21 @@ class _ChoosePromptPageState extends State<ChoosePromptPage> {
           ),
         ),
         child: Align(
-          alignment: Alignment.bottomCenter, // Aligns text at the bottom center
+          alignment: Alignment.bottomCenter,
           child: Padding(
-            padding:
-                EdgeInsets.only(bottom: 8.h), // Add some padding at the bottom
+            padding: EdgeInsets.only(bottom: 8.h),
             child: Text(
               label,
               style: TextStyle(
                 fontFamily: 'VAG-Rounded',
-                fontSize: 55.sp, // Scaled font size
+                fontSize: 55.sp,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
                 shadows: [
                   Shadow(
-                    blurRadius: 10.r, // Scaled blur radius
+                    blurRadius: 10.r,
                     color: Colors.black,
-                    offset: Offset(2.w, 2.h), // Scaled shadow offset
+                    offset: Offset(2.w, 2.h),
                   ),
                 ],
               ),
@@ -119,11 +120,13 @@ class _ChoosePromptPageState extends State<ChoosePromptPage> {
       children: [
         CustomButton(
           text: 'Next',
-          onPressed: () async {
-            if (_selectedPrompt != null) {
-              await _sendPromptToApi(_selectedPrompt!, context);
-            }
-          },
+          onPressed: _selectedPrompt != null
+              ? () async {
+                  if (_selectedPrompt != null) {
+                    await _sendPromptToApi(_selectedPrompt!, context);
+                  }
+                }
+              : () {}, // Provide an empty callback when the button is disabled
           isDisabled: _selectedPrompt == null,
         ),
       ],
@@ -133,8 +136,10 @@ class _ChoosePromptPageState extends State<ChoosePromptPage> {
 
 Future<void> _sendPromptToApi(int promptNumber, BuildContext context) async {
   try {
+    String backendUrl =
+        Provider.of<BackendConfig>(context, listen: false).backendUrl;
     var response = await http.get(
-      Uri.parse('http://192.168.0.177:2000/get_prompt/$promptNumber'),
+      Uri.parse('$backendUrl/get_prompt/$promptNumber'),
     );
 
     if (response.statusCode == 200) {

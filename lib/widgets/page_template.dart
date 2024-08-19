@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:photobooth/main.dart';
 
 class ResponsivePageTemplate extends StatelessWidget {
   final Widget title;
@@ -15,28 +16,28 @@ class ResponsivePageTemplate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF6CD4FF),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 40.h),
-        child: Column(
-          children: [
-            Expanded(
-              flex: 2,
-              child: Align(
-                alignment: Alignment.center,
-                child: title,
+      backgroundColor: howestBlue,
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 90.w, vertical: 40.h),
+          child: Column(
+            children: [
+              Container(
+                height: 200.h,
+                // flex: 2,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: title,
+                ),
               ),
-            ),
-            Expanded(
-              flex: 6,
-              child: content,
-            ),
-            SizedBox(height: 20.h),
-            Expanded(
-              flex: 2,
-              child: footer,
-            ),
-          ],
+              Expanded(
+                flex: 6,
+                child: content,
+              ),
+              SizedBox(height: 20.h),
+              footer, // Removing Expanded to avoid the footer taking excess space
+            ],
+          ),
         ),
       ),
     );

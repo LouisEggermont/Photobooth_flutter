@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:photobooth/main.dart';
+import 'package:photobooth/provider/backend_config.dart';
+import 'package:provider/provider.dart';
 import '/widgets/title.dart';
 import '/widgets/button.dart';
 import 'package:http/http.dart' as http;
@@ -45,10 +48,11 @@ class _StartPageState extends State<StartPage>
     setState(() {
       isCheckingHealth = true; // Start checking
     });
-
+    String backendUrl =
+        Provider.of<BackendConfig>(context, listen: false).backendUrl;
     try {
       final response = await http
-          .get(Uri.parse('http://192.168.0.177:2000/health'))
+          .get(Uri.parse('$backendUrl/health'))
           .timeout(Duration(seconds: 5));
 
       if (response.statusCode == 200) {
@@ -75,6 +79,43 @@ class _StartPageState extends State<StartPage>
       context,
       message,
       onRetry: _checkBackendHealth, // Retry the health check
+    );
+  }
+
+  void _showBackendUrlDialog() {
+    String backendUrl =
+        Provider.of<BackendConfig>(context, listen: false).backendUrl;
+    TextEditingController controller = TextEditingController(text: backendUrl);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Change Backend URL'),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              labelText: 'Backend URL',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Provider.of<BackendConfig>(context, listen: false)
+                    .updateBackendUrl(controller.text);
+                Navigator.of(context).pop();
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -132,9 +173,12 @@ class _StartPageState extends State<StartPage>
           ),
           Positioned(
             top: 120.h,
-            child: CustomTitle(
-              mainText: 'Snap, Share, Shine',
-              subText: 'Your Story Starts Here!',
+            child: GestureDetector(
+              onLongPress: _showBackendUrlDialog,
+              child: CustomTitle(
+                mainText: 'Snap, Share, Shine',
+                subText: 'Your Story Starts Here!',
+              ),
             ),
           ),
           Positioned(
