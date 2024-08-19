@@ -8,6 +8,7 @@ class ResponsivePageTemplate extends StatelessWidget {
   final Widget footer;
 
   const ResponsivePageTemplate({
+    super.key,
     required this.title,
     required this.content,
     required this.footer,
@@ -22,7 +23,7 @@ class ResponsivePageTemplate extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 90.w, vertical: 40.h),
           child: Column(
             children: [
-              Container(
+              SizedBox(
                 height: 200.h,
                 // flex: 2,
                 child: Align(

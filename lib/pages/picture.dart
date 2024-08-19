@@ -22,6 +22,8 @@ class ImageData {
 }
 
 class ChoosePicturePage extends StatefulWidget {
+  const ChoosePicturePage({super.key});
+
   @override
   _ChoosePicturePageState createState() => _ChoosePicturePageState();
 }
@@ -29,7 +31,7 @@ class ChoosePicturePage extends StatefulWidget {
 class _ChoosePicturePageState extends State<ChoosePicturePage> {
   List<ImageData> _images = [];
   bool _isLoading = true;
-  List<int> _selectedImages = [];
+  final List<int> _selectedImages = [];
 
   @override
   void initState() {
@@ -89,14 +91,14 @@ class _ChoosePicturePageState extends State<ChoosePicturePage> {
         children: [
           _buildSendButton(),
           SizedBox(height: 20.h),
-          ProgressSteps(totalSteps: 4, currentStep: 4),
+          const ProgressSteps(totalSteps: 4, currentStep: 4),
         ],
       ),
     );
   }
 
   Widget _buildTitle() {
-    return CustomTitle(
+    return const CustomTitle(
       mainText: 'Choose Your Pictures',
       subText: '',
       scaleFactor: .87,
@@ -132,7 +134,7 @@ class _ChoosePicturePageState extends State<ChoosePicturePage> {
             shrinkWrap:
                 true, // Ensure the grid takes up only as much space as needed
             physics:
-                NeverScrollableScrollPhysics(), // Disable scrolling inside the grid
+                const NeverScrollableScrollPhysics(), // Disable scrolling inside the grid
           ),
         ],
       ),

@@ -10,18 +10,22 @@ import 'package:provider/provider.dart';
 import '/widgets/title.dart';
 import '/widgets/page_template.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: WaitingForImagesPage(),
     );
   }
 }
 
 class WaitingForImagesPage extends StatefulWidget {
+  const WaitingForImagesPage({super.key});
+
   @override
   _WaitingForImagesPageState createState() => _WaitingForImagesPageState();
 }
@@ -58,7 +62,7 @@ class _WaitingForImagesPageState extends State<WaitingForImagesPage> {
   }
 
   void _startRandomStringTimer() {
-    _timer = Timer.periodic(Duration(seconds: 7), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 7), (timer) {
       _displayRandomString();
     });
   }
@@ -74,20 +78,20 @@ class _WaitingForImagesPageState extends State<WaitingForImagesPage> {
         if (data['isDone'] == true) {
           Navigator.pushReplacementNamed(context, '/picture');
         } else {
-          Future.delayed(Duration(seconds: 5), _checkStatus);
+          Future.delayed(const Duration(seconds: 5), _checkStatus);
         }
       } else {
-        Future.delayed(Duration(seconds: 5), _checkStatus);
+        Future.delayed(const Duration(seconds: 5), _checkStatus);
       }
     } catch (e) {
-      Future.delayed(Duration(seconds: 5), _checkStatus);
+      Future.delayed(const Duration(seconds: 5), _checkStatus);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return ResponsivePageTemplate(
-      title: CustomTitle(
+      title: const CustomTitle(
         mainText: '',
         subText: '',
       ),
@@ -122,7 +126,7 @@ class _WaitingForImagesPageState extends State<WaitingForImagesPage> {
           ),
         ],
       ),
-      footer: SizedBox.shrink(), // No footer needed for this page
+      footer: const SizedBox.shrink(), // No footer needed for this page
     );
   }
 }

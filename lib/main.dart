@@ -12,8 +12,6 @@ import 'pages/waiting.dart';
 // import 'pages/sent.dart';
 
 // Widgets
-import 'widgets/title.dart';
-import 'widgets/button.dart';
 
 // Providers
 import 'package:photobooth/provider/backend_config.dart';
@@ -34,12 +32,14 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (context) => BackendConfig(),
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -57,37 +57,37 @@ class MyApp extends StatelessWidget {
               onSecondary: howestWhite,
               tertiary: howestYellow, // Secondary color - Yellow
               onTertiary: howestBlack,
-              surface: Color(0xFF8AC9ED), // Tertiary color - Light Blue
+              surface: const Color(0xFF8AC9ED), // Tertiary color - Light Blue
               onSurface: howestBlack,
               error: Colors.red, // Tertiary color - Teal
               onError: howestWhite,
             ),
             scaffoldBackgroundColor: howestBlue,
             checkboxTheme: CheckboxThemeData(
-              fillColor: MaterialStateProperty.all<Color>(Colors.white),
-              checkColor: MaterialStateProperty.all<Color>(Colors.white),
+              fillColor: WidgetStateProperty.all<Color>(Colors.white),
+              checkColor: WidgetStateProperty.all<Color>(Colors.white),
               side: BorderSide(color: Colors.grey.shade100, width: .5.w),
             ),
             radioTheme: RadioThemeData(
-                fillColor: MaterialStateProperty.all<Color>(Colors.white),
+                fillColor: WidgetStateProperty.all<Color>(Colors.white),
                 visualDensity: VisualDensity.adaptivePlatformDensity
                 // .copyWith(horizontal: -4.0, vertical: -4.0),
                 ),
             // switchTheme: SwitchThemeData(
-            //   thumbColor: MaterialStateProperty.all<Color>(Colors.green),
-            //   trackColor: MaterialStateProperty.all<Color>(
+            //   thumbColor: WidgetStateProperty.all<Color>(Colors.green),
+            //   trackColor: WidgetStateProperty.all<Color>(
             //     Colors.green.withOpacity(0.5),
             //   ),
             // ),
           ),
-          home: CameraPage(),
+          home: const StartPage(),
           routes: {
-            '/start': (context) => StartPage(),
-            '/camera': (context) => CameraPage(),
-            '/prompt': (context) => ChoosePromptPage(),
-            '/form': (context) => FormPage(),
-            '/wait': (context) => WaitingForImagesPage(),
-            '/picture': (context) => ChoosePicturePage(),
+            '/start': (context) => const StartPage(),
+            '/camera': (context) => const CameraPage(),
+            '/prompt': (context) => const ChoosePromptPage(),
+            '/form': (context) => const FormPage(),
+            '/wait': (context) => const WaitingForImagesPage(),
+            '/picture': (context) => const ChoosePicturePage(),
             // '/sent': (context) => SentPage(selectedImageUrls: []),
           },
           debugShowCheckedModeBanner: false,

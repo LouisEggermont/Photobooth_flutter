@@ -10,6 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ChoosePromptPage extends StatefulWidget {
+  const ChoosePromptPage({super.key});
+
   @override
   _ChoosePromptPageState createState() => _ChoosePromptPageState();
 }
@@ -27,14 +29,14 @@ class _ChoosePromptPageState extends State<ChoosePromptPage> {
         children: [
           _buildNextButton(),
           SizedBox(height: 40.h),
-          ProgressSteps(totalSteps: 4, currentStep: 2),
+          const ProgressSteps(totalSteps: 4, currentStep: 2),
         ],
       ),
     );
   }
 
   Widget _buildTitle() {
-    return CustomTitle(
+    return const CustomTitle(
       mainText: 'Choose a prompt',
       subText: '',
     );
@@ -50,7 +52,7 @@ class _ChoosePromptPageState extends State<ChoosePromptPage> {
             crossAxisSpacing: 10.w,
             mainAxisSpacing: 10.h,
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             children: [
               _buildPromptOption(1, 'Sport', 'assets/sport.png'),
               _buildPromptOption(2, 'Space', 'assets/space.png'),
@@ -144,6 +146,7 @@ Future<void> _sendPromptToApi(int promptNumber, BuildContext context) async {
 
     if (response.statusCode == 200) {
       print('Prompt sent successfully');
+
       Navigator.pushReplacementNamed(context, '/form');
     } else {
       ErrorDialog.show(
@@ -161,4 +164,4 @@ Future<void> _sendPromptToApi(int promptNumber, BuildContext context) async {
   }
 }
 
-void main() => runApp(MaterialApp(home: ChoosePromptPage()));
+void main() => runApp(const MaterialApp(home: ChoosePromptPage()));

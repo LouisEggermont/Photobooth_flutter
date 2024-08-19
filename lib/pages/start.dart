@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:photobooth/main.dart';
 import 'package:photobooth/provider/backend_config.dart';
 import 'package:provider/provider.dart';
 import '/widgets/title.dart';
@@ -11,6 +10,8 @@ import 'dart:convert';
 import '/widgets/error_dialog.dart'; // Import the ErrorDialog widget
 
 class StartPage extends StatefulWidget {
+  const StartPage({super.key});
+
   @override
   _StartPageState createState() => _StartPageState();
 }
@@ -28,7 +29,7 @@ class _StartPageState extends State<StartPage>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 5),
+      duration: const Duration(seconds: 5),
     )..repeat(reverse: true);
 
     _verticalAnimation = Tween<double>(begin: 0.0, end: 30.0).animate(
@@ -53,7 +54,7 @@ class _StartPageState extends State<StartPage>
     try {
       final response = await http
           .get(Uri.parse('$backendUrl/health'))
-          .timeout(Duration(seconds: 5));
+          .timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -91,10 +92,10 @@ class _StartPageState extends State<StartPage>
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Change Backend URL'),
+          title: const Text('Change Backend URL'),
           content: TextField(
             controller: controller,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Backend URL',
             ),
           ),
@@ -103,7 +104,7 @@ class _StartPageState extends State<StartPage>
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -111,7 +112,7 @@ class _StartPageState extends State<StartPage>
                     .updateBackendUrl(controller.text);
                 Navigator.of(context).pop();
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         );
@@ -133,7 +134,7 @@ class _StartPageState extends State<StartPage>
         children: [
           _buildStartPageContent(),
           if (isCheckingHealth)
-            Center(
+            const Center(
               child: CircularProgressIndicator(),
             ),
         ],
@@ -142,7 +143,7 @@ class _StartPageState extends State<StartPage>
   }
 
   Widget _buildStartPageContent() {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: double.infinity,
       child: Stack(
@@ -175,7 +176,7 @@ class _StartPageState extends State<StartPage>
             top: 120.h,
             child: GestureDetector(
               onLongPress: _showBackendUrlDialog,
-              child: CustomTitle(
+              child: const CustomTitle(
                 mainText: 'Snap, Share, Shine',
                 subText: 'Your Story Starts Here!',
               ),

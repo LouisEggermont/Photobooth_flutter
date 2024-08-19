@@ -8,6 +8,7 @@ class CustomTitle extends StatelessWidget {
   final double scaleFactor;
 
   const CustomTitle({
+    super.key,
     required this.mainText,
     required this.subText,
     this.leftOffset = 190.0,
@@ -18,7 +19,7 @@ class CustomTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     // If mainText is empty, return an empty SizedBox (no rendering)
     if (mainText.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Transform.rotate(
@@ -33,7 +34,7 @@ class CustomTitle extends StatelessWidget {
               vertical: 6.h * scaleFactor,
             ),
             decoration: BoxDecoration(
-              color: Color(0xFFe6007e),
+              color: const Color(0xFFe6007e),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black26,
@@ -63,7 +64,7 @@ class CustomTitle extends StatelessWidget {
                   vertical: 6.h * scaleFactor,
                 ),
                 decoration: BoxDecoration(
-                  color: Color(0xFFFFFF00),
+                  color: const Color(0xFFFFFF00),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black26,

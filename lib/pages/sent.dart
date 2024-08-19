@@ -12,7 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class SentPage extends StatefulWidget {
   final List<String> selectedImageUrls;
 
-  const SentPage({Key? key, required this.selectedImageUrls}) : super(key: key);
+  const SentPage({super.key, required this.selectedImageUrls});
 
   @override
   _SentPageState createState() => _SentPageState();
@@ -41,8 +41,8 @@ class _SentPageState extends State<SentPage> {
         setState(() {
           isSuccessful = true;
         });
-        await Future.delayed(
-            Duration(seconds: 5)); // Short delay to show success animation
+        await Future.delayed(const Duration(
+            seconds: 5)); // Short delay to show success animation
 
         // Optionally navigate to another page or pop back to the previous one
         Navigator.pushReplacementNamed(context, '/start');
@@ -67,7 +67,8 @@ class _SentPageState extends State<SentPage> {
     return ResponsivePageTemplate(
       title: _buildTitle(),
       content: _buildContent(),
-      footer: SizedBox(), // No footer needed for this page, leaving it empty
+      footer:
+          const SizedBox(), // No footer needed for this page, leaving it empty
     );
   }
 

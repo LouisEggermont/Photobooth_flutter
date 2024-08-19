@@ -7,7 +7,8 @@ class CustomTextFormField extends StatelessWidget {
   final void Function(String?)? onSaved;
   final TextInputType? keyboardType;
 
-  CustomTextFormField({
+  const CustomTextFormField({
+    super.key,
     required this.labelText,
     this.validator,
     this.onSaved,

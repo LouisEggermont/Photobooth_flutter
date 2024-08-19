@@ -13,6 +13,8 @@ import 'package:http/http.dart' as http;
 import '/widgets/page_template.dart';
 
 class FormPage extends StatefulWidget {
+  const FormPage({super.key});
+
   @override
   _FormPageState createState() => _FormPageState();
 }
@@ -67,7 +69,7 @@ class _FormPageState extends State<FormPage> {
   }
 
   Widget _buildTitle() {
-    return Row(
+    return const Row(
       children: [
         CustomTitle(
           mainText: 'Generating images',
@@ -206,7 +208,7 @@ class _FormPageState extends State<FormPage> {
       },
       controlAffinity: ListTileControlAffinity.leading,
       activeColor: Colors.white,
-      checkColor: Color(0xFF63C9F2),
+      checkColor: const Color(0xFF63C9F2),
       tileColor: Colors.transparent,
     );
   }
@@ -313,8 +315,8 @@ class _FormPageState extends State<FormPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Privacy Policy'),
-          content: SingleChildScrollView(
+          title: const Text('Privacy Policy'),
+          content: const SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -336,7 +338,7 @@ class _FormPageState extends State<FormPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Close'),
+              child: const Text('Close'),
             ),
           ],
         );
@@ -392,16 +394,16 @@ class _FormPageState extends State<FormPage> {
           Navigator.pushReplacementNamed(context, '/wait');
         }
       } else {
-        Future.delayed(Duration(seconds: 5), _checkStatus);
+        Future.delayed(const Duration(seconds: 5), _checkStatus);
       }
     } catch (e) {
-      Future.delayed(Duration(seconds: 5), _checkStatus);
+      Future.delayed(const Duration(seconds: 5), _checkStatus);
     }
   }
 
   Widget _buildProgressSteps() {
-    return ProgressSteps(totalSteps: 4, currentStep: 3);
+    return const ProgressSteps(totalSteps: 4, currentStep: 3);
   }
 }
 
-void main() => runApp(MaterialApp(home: FormPage()));
+void main() => runApp(const MaterialApp(home: FormPage()));

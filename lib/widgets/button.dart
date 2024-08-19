@@ -6,7 +6,8 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool isDisabled;
 
-  CustomButton({
+  const CustomButton({
+    super.key,
     required this.text,
     required this.onPressed,
     this.isDisabled = false,
@@ -22,11 +23,13 @@ class CustomButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: isDisabled
               ? Colors.transparent
-              : Color(0xFFe6007e), // Background color
+              : const Color(0xFFe6007e), // Background color
           foregroundColor:
               isDisabled ? Colors.pink : Colors.white, // Text color
           side: BorderSide(
-            color: isDisabled ? Colors.pink : Color(0xFFe6007e), // Border color
+            color: isDisabled
+                ? Colors.pink
+                : const Color(0xFFe6007e), // Border color
             width: 3.w, // Scaled width
           ),
           padding: EdgeInsets.symmetric(

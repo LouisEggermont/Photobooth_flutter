@@ -6,7 +6,8 @@ class CustomCameraButton extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData icon;
 
-  CustomCameraButton({
+  const CustomCameraButton({
+    super.key,
     required this.onPressed,
     required this.icon,
   });
@@ -14,7 +15,7 @@ class CustomCameraButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: howestBlue, // Background color
         shape: BoxShape.circle, // Make the button circular
       ),
