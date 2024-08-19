@@ -27,42 +27,49 @@ class _FormPageState extends State<FormPage> {
   String _year = '5';
   bool _acceptPrivacyPolicy = false;
   bool _isSubmitted = false;
+  bool _isPrivacyPolicyInvalid = false;
 
   @override
   Widget build(BuildContext context) {
     final bool isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
-    return ResponsivePageTemplate(
-      title: _buildTitle(),
-      content: Padding(
-        padding: EdgeInsets.only(top: 80.h),
-        child: SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height -
-                  650.h, // Adjust height to center the form
-            ),
-            child: IntrinsicHeight(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildFormContent(),
-                ],
+    return GestureDetector(
+      onTap: () {
+        // Dismiss the keyboard when tapping outside of text fields
+        FocusScope.of(context).unfocus();
+      },
+      child: ResponsivePageTemplate(
+        title: _buildTitle(),
+        content: Padding(
+          padding: EdgeInsets.only(top: 80.h),
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height -
+                    650.h, // Adjust height to center the form
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildFormContent(),
+                  ],
+                ),
               ),
             ),
           ),
         ),
-      ),
-      footer: Visibility(
-        visible:
-            !isKeyboardVisible, // Hide the footer if the keyboard is visible
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildSubmitButton(),
-            SizedBox(height: 20.h),
-            _buildProgressSteps(),
-          ],
+        footer: Visibility(
+          visible:
+              !isKeyboardVisible, // Hide the footer if the keyboard is visible
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildSubmitButton(),
+              SizedBox(height: 20.h),
+              _buildProgressSteps(),
+            ],
+          ),
         ),
       ),
     );
@@ -178,7 +185,9 @@ class _FormPageState extends State<FormPage> {
             TextSpan(
               text: 'I accept the ',
               style: TextStyle(
-                color: Colors.black,
+                color: _isPrivacyPolicyInvalid
+                    ? Colors.red
+                    : Colors.black, // Change color based on validation
                 fontFamily: "OpenSans",
                 fontSize: 31.sp,
               ),
@@ -186,7 +195,9 @@ class _FormPageState extends State<FormPage> {
             TextSpan(
               text: 'privacy policy',
               style: TextStyle(
-                color: Colors.black,
+                color: _isPrivacyPolicyInvalid
+                    ? Colors.red
+                    : Colors.black, // Change color based on validation
                 fontFamily: "OpenSans",
                 fontSize: 31.sp,
                 fontWeight: FontWeight.bold,
@@ -204,6 +215,8 @@ class _FormPageState extends State<FormPage> {
       onChanged: (value) {
         setState(() {
           _acceptPrivacyPolicy = value!;
+          _isPrivacyPolicyInvalid =
+              false; // Reset error state when user interacts
         });
       },
       controlAffinity: ListTileControlAffinity.leading,
@@ -290,25 +303,24 @@ class _FormPageState extends State<FormPage> {
           onPressed: () {
             setState(() {
               _isSubmitted = true;
+              _isPrivacyPolicyInvalid =
+                  !_acceptPrivacyPolicy; // Check if the checkbox is valid
             });
 
             if (_formKey.currentState!.validate() && _acceptPrivacyPolicy) {
               _formKey.currentState!.save();
               _sendFormToApi();
-            } else if (!_acceptPrivacyPolicy) {
-              _showPrivacyPolicyDialog();
             }
           },
           text: "Submit",
-          // isDisabled: !_isFormValid(),
         ),
       ],
     );
   }
 
-  bool _isFormValid() {
-    return _acceptPrivacyPolicy;
-  }
+  // bool _isFormValid() {
+  //   return _acceptPrivacyPolicy;
+  // }
 
   void _showPrivacyPolicyDialog() {
     showDialog(
