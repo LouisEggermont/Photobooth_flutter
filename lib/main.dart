@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
             //   ),
             // ),
           ),
-          home: FormPage(),
+          home: CameraPage(),
           routes: {
             '/start': (context) => StartPage(),
             '/camera': (context) => CameraPage(),

@@ -189,6 +189,15 @@ class _StartPageState extends State<StartPage>
               onPressed: () => _checkBackendHealth(),
             ),
           ),
+          Positioned(
+            bottom: 30.h,
+            left: 50.w,
+            child: Image.asset(
+              'assets/howest_hogeschool-logo.png',
+              width: 350.w,
+              // height: 200.h,
+            ),
+          ),
         ],
       ),
     );

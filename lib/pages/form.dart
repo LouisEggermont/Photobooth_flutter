@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:photobooth/provider/backend_config.dart';
 import 'package:photobooth/widgets/error_dialog.dart';
@@ -37,7 +38,7 @@ class _FormPageState extends State<FormPage> {
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: MediaQuery.of(context).size.height -
-                  600.h, // Adjust height to center the form
+                  650.h, // Adjust height to center the form
             ),
             child: IntrinsicHeight(
               child: Column(
@@ -175,7 +176,10 @@ class _FormPageState extends State<FormPage> {
             TextSpan(
               text: 'I accept the ',
               style: TextStyle(
-                  color: Colors.black, fontFamily: "OpenSans", fontSize: 31.sp),
+                color: Colors.black,
+                fontFamily: "OpenSans",
+                fontSize: 31.sp,
+              ),
             ),
             TextSpan(
               text: 'privacy policy',
@@ -184,7 +188,12 @@ class _FormPageState extends State<FormPage> {
                 fontFamily: "OpenSans",
                 fontSize: 31.sp,
                 fontWeight: FontWeight.bold,
+                decoration: TextDecoration.underline,
               ),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () {
+                  _showPrivacyPolicyDialog();
+                },
             ),
           ],
         ),
@@ -302,16 +311,36 @@ class _FormPageState extends State<FormPage> {
   void _showPrivacyPolicyDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Privacy Policy'),
-        content: Text('You must accept the privacy policy to proceed.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('OK'),
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Privacy Policy'),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Effective Date: 22/01/2024'),
+                SizedBox(height: 10),
+                Text('1. Introduction',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                    'Welcome to the Howest Photobooth! This Privacy Policy outlines how we collect, use, and protect the personal information of users who interact with our project. By using it, you agree to the terms outlined in this policy.'),
+                SizedBox(height: 10),
+                Text('2. Information We Collect',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                    'Personal Information: When you use the photobooth, we collect personal information: names, e-mail addresses, and what year you are in high school; this is voluntarily provided by users.'),
+                // Add other sections of the privacy policy here
+              ],
+            ),
           ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 
