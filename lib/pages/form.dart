@@ -29,43 +29,37 @@ class _FormPageState extends State<FormPage> {
   Widget build(BuildContext context) {
     final bool isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
-    return GestureDetector(
-      onTap: () {
-        // Unfocus the text fields and hide the keyboard
-        FocusScope.of(context).unfocus();
-      },
-      child: ResponsivePageTemplate(
-        title: _buildTitle(),
-        content: Padding(
-          padding: EdgeInsets.only(top: 80.h),
-          child: SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height -
-                    700.h, // Adjust height to center the form
-              ),
-              child: IntrinsicHeight(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildFormContent(),
-                  ],
-                ),
+    return ResponsivePageTemplate(
+      title: _buildTitle(),
+      content: Padding(
+        padding: EdgeInsets.only(top: 80.h),
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height -
+                  600.h, // Adjust height to center the form
+            ),
+            child: IntrinsicHeight(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildFormContent(),
+                ],
               ),
             ),
           ),
         ),
-        footer: Visibility(
-          visible:
-              !isKeyboardVisible, // Hide the footer if the keyboard is visible
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildSubmitButton(),
-              SizedBox(height: 20.h),
-              _buildProgressSteps(),
-            ],
-          ),
+      ),
+      footer: Visibility(
+        visible:
+            !isKeyboardVisible, // Hide the footer if the keyboard is visible
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildSubmitButton(),
+            SizedBox(height: 20.h),
+            _buildProgressSteps(),
+          ],
         ),
       ),
     );
@@ -295,7 +289,7 @@ class _FormPageState extends State<FormPage> {
             }
           },
           text: "Submit",
-          isDisabled: !_isFormValid(),
+          // isDisabled: !_isFormValid(),
         ),
       ],
     );
