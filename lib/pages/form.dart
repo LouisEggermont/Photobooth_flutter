@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:photobooth/widgets/error_dialog.dart';
 import 'package:photobooth/widgets/form_field.dart';
 import 'package:photobooth/widgets/progress_steps.dart';
 import '/widgets/title.dart';
@@ -25,26 +26,34 @@ class _FormPageState extends State<FormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Color(0xFF63C9F2),
-      body: Padding(
-        // padding: EdgeInsets.symmetric(horizontal: 90.w),
-        padding: EdgeInsets.only(
-          top: 90.h, // Top padding
-          bottom: 50.h, // Bottom padding
-          left: 90.w, // Left padding
-          right: 90.w, // Right padding
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 40.h),
-            _buildTitle(),
-            SizedBox(height: 180.h),
-            _buildForm(),
-            Spacer(),
-            _buildProgressSteps(),
-            SizedBox(height: 20.h),
-          ],
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.only(
+              top: 90.h, // Top padding
+              bottom: 50.h, // Bottom padding
+              left: 90.w, // Left padding
+              right: 90.w, // Right padding
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 40.h),
+                _buildTitle(),
+                SizedBox(height: 180.h),
+                _buildForm(),
+                SizedBox(height: 100.h),
+                _buildSubmitButton(),
+                SizedBox(height: 20.h),
+                _buildProgressSteps(),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -87,8 +96,6 @@ class _FormPageState extends State<FormPage> {
           _buildPrivacyPolicyCheckbox(),
           SizedBox(height: 85.h),
           _buildSecondaryYearRadioButtons(),
-          SizedBox(height: 100.h),
-          _buildSubmitButton(),
         ],
       ),
     );
@@ -309,10 +316,18 @@ class _FormPageState extends State<FormPage> {
         print('Form submitted successfully');
         _checkStatus(); // Start checking the status
       } else {
-        print('Failed to submit form');
+        ErrorDialog.show(
+          context,
+          'Failed to submit form. Please try again.',
+          onRetry: _sendFormToApi, // Retry logic
+        );
       }
     } catch (e) {
-      print('Error submitting form: $e');
+      ErrorDialog.show(
+        context,
+        'Error submitting form: $e',
+        onRetry: _sendFormToApi, // Retry logic
+      );
     }
   }
 

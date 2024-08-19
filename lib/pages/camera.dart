@@ -7,6 +7,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:photobooth/widgets/error_dialog.dart';
 import 'package:photobooth/widgets/progress_steps.dart';
 import 'package:photobooth/widgets/title.dart';
 
@@ -172,7 +173,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
           child: CustomCameraButton(
             onPressed: () {
               sendPictureToApi(picture!.path);
-              Navigator.pushReplacementNamed(context, '/prompt');
+              // Navigator.pushReplacementNamed(context, '/prompt');
             },
             icon: Icons.done,
           ),
@@ -244,23 +245,56 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     });
   }
 
+  // Future<void> sendPictureToApi(String path) async {
+  //   File imageFile = File(path);
+  //   List<int> imageBytes = await imageFile.readAsBytes();
+  //   String base64Image = base64Encode(imageBytes);
+
+  //   var payload = jsonEncode({'image': 'data:image/png;base64,$base64Image'});
+
+  //   var response = await http.post(
+  //     Uri.parse('http://192.168.0.177:2000/save_image'),
+  //     headers: {'Content-Type': 'application/json'},
+  //     body: payload,
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     print('Picture sent successfully');
+  //   } else {
+  //     print('Failed to send picture');
+  //   }
+  // }
+
   Future<void> sendPictureToApi(String path) async {
-    File imageFile = File(path);
-    List<int> imageBytes = await imageFile.readAsBytes();
-    String base64Image = base64Encode(imageBytes);
+    try {
+      File imageFile = File(path);
+      List<int> imageBytes = await imageFile.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
 
-    var payload = jsonEncode({'image': 'data:image/png;base64,$base64Image'});
+      var payload = jsonEncode({'image': 'data:image/png;base64,$base64Image'});
 
-    var response = await http.post(
-      Uri.parse('http://192.168.0.177:2000/save_image'),
-      headers: {'Content-Type': 'application/json'},
-      body: payload,
-    );
+      var response = await http.post(
+        Uri.parse('http://192.168.0.177:2000/save_image'),
+        headers: {'Content-Type': 'application/json'},
+        body: payload,
+      );
 
-    if (response.statusCode == 200) {
-      print('Picture sent successfully');
-    } else {
-      print('Failed to send picture');
+      if (response.statusCode == 200) {
+        print('Picture sent successfully');
+        Navigator.pushReplacementNamed(context, '/prompt');
+      } else {
+        ErrorDialog.show(
+          context,
+          'Failed to send picture. Please try again.',
+          onRetry: () => sendPictureToApi(path), // Retry logic
+        );
+      }
+    } catch (e) {
+      ErrorDialog.show(
+        context,
+        'Error sending picture: $e',
+        onRetry: () => sendPictureToApi(path), // Retry logic
+      );
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:photobooth/main.dart';
 import 'package:photobooth/widgets/button.dart';
 import 'package:photobooth/widgets/page_template.dart';
 import 'dart:convert';
@@ -132,7 +133,7 @@ class _ChoosePicturePageState extends State<ChoosePicturePage> {
               child: Container(
                 padding: EdgeInsets.all(4.0),
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: howestBlue,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(

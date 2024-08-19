@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:photobooth/widgets/error_dialog.dart';
 import 'package:photobooth/widgets/progress_steps.dart';
 import '/widgets/title.dart';
 import '/widgets/button.dart';
@@ -140,10 +141,18 @@ Future<void> _sendPromptToApi(int promptNumber, BuildContext context) async {
       print('Prompt sent successfully');
       Navigator.pushReplacementNamed(context, '/form');
     } else {
-      print('Failed to send prompt');
+      ErrorDialog.show(
+        context,
+        'Failed to send prompt. Please try again.',
+        onRetry: () => _sendPromptToApi(promptNumber, context), // Retry logic
+      );
     }
   } catch (e) {
-    print('Error sending prompt: $e');
+    ErrorDialog.show(
+      context,
+      'Error sending prompt: $e',
+      onRetry: () => _sendPromptToApi(promptNumber, context), // Retry logic
+    );
   }
 }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:lottie/lottie.dart';
+import 'package:photobooth/widgets/error_dialog.dart';
 import 'dart:convert';
 
 import '../widgets/title.dart';
@@ -41,12 +42,18 @@ class _SentPageState extends State<SentPage> {
         // Optionally navigate to another page or pop back to the previous one
         Navigator.pushReplacementNamed(context, '/start');
       } else {
-        // Handle failure
-        print('Failed to send images');
+        ErrorDialog.show(
+          context,
+          'Failed to send images. Please try again.',
+          onRetry: _sendRequest, // Retry logic
+        );
       }
     } catch (e) {
-      // Handle exception
-      print('Error: $e');
+      ErrorDialog.show(
+        context,
+        'Error: $e',
+        onRetry: _sendRequest, // Retry logic
+      );
     }
   }
 
