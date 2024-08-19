@@ -73,9 +73,13 @@ class _SentPageState extends State<SentPage> {
   }
 
   Widget _buildTitle() {
-    return CustomTitle(
-      mainText: isSuccessful ? 'Images are sent!' : '',
-      subText: isSuccessful ? 'Thank you and enjoy!' : '',
+    return Row(
+      children: [
+        CustomTitle(
+          mainText: isSuccessful ? 'Images are sent!' : '',
+          subText: isSuccessful ? 'Thank you and enjoy!' : '',
+        ),
+      ],
     );
   }
 
